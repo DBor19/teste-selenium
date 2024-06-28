@@ -1,23 +1,11 @@
 package automatizados.pageObject;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 public class ProdutoPO extends BasePO {
-
-    public ProdutoPO(WebDriver driver) {
-        super(driver);
-    }
-
-    @FindBy(id = "btn-adicionar")
-    public WebElement buttonCriar;
 
     @FindBy(id = "codigo")
     public WebElement inputCodigo;
@@ -26,7 +14,7 @@ public class ProdutoPO extends BasePO {
     public WebElement inputNome;
 
     @FindBy(id = "quantidade")
-    public WebElement inputQtde;
+    public WebElement inputQuantidade;
 
     @FindBy(id = "valor")
     public WebElement inputValor;
@@ -34,64 +22,59 @@ public class ProdutoPO extends BasePO {
     @FindBy(id = "data")
     public WebElement inputData;
 
-    @FindBy(id = "btn-salvar")
-    public WebElement buttonSalvar;
-
-    @FindBy(id = "btn-sair")
-    public WebElement buttonSair;
-
     @FindBy(id = "mensagem")
     public WebElement spanMensagem;
 
-    @FindBy(css = "tbody")
-    public WebElement tbodyProdutos;
+    @FindBy(id = "btn-adicionar")
+    public WebElement buttonAdicionar;
+
+    @FindBy(id = "btn-salvar")
+    public WebElement buttonSalvar;
+
+    @FindBy(id = "cadastro-produto")
+    public WebElement modalSalvar;
+
+    @FindBy(css = "table tbody")
+    public WebElement tabelaProdutosCriados;
+
+    @FindBy(css = "#cadastro-produto button.close")
+    public WebElement closeButton;
+
+    public ProdutoPO(WebDriver driver) {
+        super(driver);
+    }
 
     public String obterMensagem() {
         return this.spanMensagem.getText();
     }
 
-    public void criarProduto(int codigo, String nome, int qtde, int valor, Date data) {
-        SimpleDateFormat formatoData = new SimpleDateFormat("yyyy-MM-dd");
-        String dataFormatada = formatoData.format(data);
-
-        buttonCriar.click();
-        escrever(inputCodigo, Integer.toString(codigo));
-        escrever(inputNome, nome);
-        escrever(inputQtde, Integer.toString(qtde));
-        escrever(inputValor, Integer.toString(valor));
-        escrever(inputData, dataFormatada);
-        buttonSalvar.click();
-    }
-
-    private void escrever(WebElement input, String texto) {
+    public void escrever(WebElement input, String texto) {
         input.clear();
         input.sendKeys(texto + Keys.TAB);
     }
 
-    public int contaProdutos() {
-        List<WebElement> linhas = tbodyProdutos.findElements(By.tagName("tr"));
-        return linhas.size();
+    public void abrirModalDeCriacao() {
+        buttonAdicionar.click();
     }
 
-    public void excluirProduto(int codigo) {
-        List<WebElement> linhas = tbodyProdutos.findElements(By.tagName("tr"));
-        for (WebElement linha : linhas) {
-            List<WebElement> colunas = linha.findElements(By.tagName("td"));
-            if (colunas.get(0).getText().equals(Integer.toString(codigo))) {
-                colunas.get(colunas.size() - 1).findElement(By.tagName("button")).click();
-                break;
-            }
-        }
+    public void salvarProduto(String codigo, String nome, String quantidade, String valor, String data) {
+        escrever(inputCodigo, codigo);
+        escrever(inputNome, nome);
+        escrever(inputQuantidade, quantidade);
+        escrever(inputValor, valor);
+        escrever(inputData, data);
+        buttonSalvar.click();
     }
 
-    public boolean verificarProdutoNaTabela(int codigo) {
-        List<WebElement> linhas = tbodyProdutos.findElements(By.tagName("tr"));
-        for (WebElement linha : linhas) {
-            List<WebElement> colunas = linha.findElements(By.tagName("td"));
-            if (colunas.get(0).getText().equals(Integer.toString(codigo))) {
-                return true;
-            }
-        }
-        return false;
+    public boolean verificarCriacaoDeProduto(String codigo, String nome, String quantidade, String valor, String data) {
+        return tabelaProdutosCriados.getText().contains(codigo) &&
+               tabelaProdutosCriados.getText().contains(nome) &&
+               tabelaProdutosCriados.getText().contains(quantidade) &&
+               tabelaProdutosCriados.getText().contains(valor) &&
+               tabelaProdutosCriados.getText().contains(data);
+    }
+
+    public void fecharModal() {
+        closeButton.click();
     }
 }

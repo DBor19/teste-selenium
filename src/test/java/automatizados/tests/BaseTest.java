@@ -14,7 +14,7 @@ public abstract class BaseTest {
 	@BeforeClass
 	public static void iniciar() {
 		System.setProperty("webdriver.chrome.driver", PATH_DRIVE);
-		driver = new ChromeDriver();
+		driver = new ChromeDriver(); // Abre o navegador 
 		driver.manage().window().maximize();
 		driver.get(URL_BASE);
 	}
